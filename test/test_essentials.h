@@ -52,7 +52,7 @@ bool debug_draw(b2World & w, int file){
 
 
 void Configurator::done_that(vertexDescriptor& src, bool & plan_works, b2World & world, std::vector<vertexDescriptor>& plan_provisional){
-		//std::pair<bool, vertexDescriptor> been(false, TransitionSystem::null_vertex());
+		std::pair<bool, vertexDescriptor> been= been_there(transitionSystem, controlGoal.disturbance); 
 		//was ve instead of src
 		std::vector <vertexDescriptor> options_src;
         //IF THE CURRENT PLAN HAS EXECUTED
@@ -75,7 +75,7 @@ void Configurator::done_that(vertexDescriptor& src, bool & plan_works, b2World &
 	//	if (been.first){
 		//	printf("provisional plan\n");
 		for (auto o:options_src){
-			plan_provisional=planner(transitionSystem, o); //been.second, been.first
+			plan_provisional=planner(transitionSystem, o, been.second, been.first); //been.second, been.first
 			vertexDescriptor end =*(plan_provisional.rbegin().base()-1);
 			if (controlGoal.checkEnded(transitionSystem[end]).ended && checkPlan(world, plan_provisional, transitionSystem)){
 				plan_works=true;

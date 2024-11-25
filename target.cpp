@@ -3,7 +3,7 @@
 void forget(Configurator *c){}
 
 void Configurator::done_that(vertexDescriptor& src, bool & plan_works, b2World & world, std::vector<vertexDescriptor>& plan_provisional){
-		//std::pair<bool, vertexDescriptor> been(false, TransitionSystem::null_vertex());
+		std::pair<bool, vertexDescriptor> been= been_there(transitionSystem, controlGoal.disturbance); 
 		//was ve instead of src
 		std::vector <vertexDescriptor> options_src;
 		bool fin=controlGoal.checkEnded(transitionSystem[src], UNDEFINED, true).ended;
@@ -40,14 +40,13 @@ void Configurator::done_that(vertexDescriptor& src, bool & plan_works, b2World &
 				plan_provisional={new_v};
 				plan_works=true;
 			}
-			//been= been_there(transitionSystem, where); 
 		}
 		else{
 			plan_works=true;//temporary to simplify things
 		}
 		for (auto o:options_src){
 			printf("recall from %i\n", o);
-			recall_plan_from(o, transitionSystem, world, plan_provisional, plan_works);
+			recall_plan_from(o, transitionSystem, world, plan_provisional, plan_works, been);
 			if (plan_works){
 				break;
 			}

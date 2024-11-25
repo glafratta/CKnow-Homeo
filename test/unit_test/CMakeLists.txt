@@ -31,6 +31,8 @@ add_executable(planner ../test_essentials.h planner.cpp)
 target_link_libraries(planner CloCK ${OpenCV_LIBS} box2d rt  )
 add_executable(split_step ../test_essentials.h split_step.cpp)
 target_link_libraries(split_step CloCK ${OpenCV_LIBS} box2d rt  )
+add_executable(been_there ../test_essentials.h been_there.cpp)
+target_link_libraries(been_there CloCK ${OpenCV_LIBS} box2d rt)
 
 
 
@@ -66,15 +68,6 @@ target_link_libraries(processData_k CloCK ${OpenCV_LIBS} box2d rt)
 target_link_libraries(kmeans_clusters CloCK ${OpenCV_LIBS} box2d rt)
 
 
-# # add_executable(split_task split_task.cpp)
-# # target_link_libraries(split_task CloCK ${OpenCV_LIBS} box2d rt  )
-# # add_executable(backtrack backtrack.cpp)
-# # target_link_libraries(backtrack CloCK ${OpenCV_LIBS} box2d rt  )
-# add_executable(explorer ../callbacks.h explorer.cpp )
-# # add_executable(transitionMatrix ../callbacks.h transitionMatrix.cpp)
-# # target_link_libraries(transitionMatrix CloCK ${OpenCV_LIBS} box2d rt  )
-# add_executable(disturbance_dimensions ../callbacks.h disturbance_dimensions.cpp)
-# add_executable(planner ../callbacks.h planner.cpp)
 add_executable(match ../test_essentials.h match.cpp)
 add_executable(find_match_state ../test_essentials.h find_match_s.cpp)
 add_executable(state_difference ../test_essentials.h state_difference.cpp)
@@ -161,6 +154,7 @@ add_test(NAME state_difference_turn COMMAND state_difference ../251023_TAGET/ 1 
 add_test(NAME match_equal COMMAND match_equal)
 add_test(NAME replanner COMMAND replanner ../170924_1321_badrun/ 2 1)
 
+add_test(NAME been_there COMMAND been_there ../251023_TAGET/)
 
 
 

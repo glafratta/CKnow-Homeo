@@ -59,8 +59,9 @@ int main(int argc, char** argv){
     conf.findMatch(state_tmp,conf.transitionSystem, NULL, UNDEFINED, StateMatcher::DISTURBANCE, &options_src, relax_match);
 
     std::vector<vertexDescriptor> plan_provisional;
+    auto been=conf.been_there(conf.transitionSystem, conf.controlGoal.disturbance);
     for (vertexDescriptor o: options_src){
-        conf.recall_plan_from(o, conf.transitionSystem, world, plan_provisional, plan_works);
+        conf.recall_plan_from(o, conf.transitionSystem, world, plan_provisional, plan_works, been);
     }
     if (conf.transitionSystem.m_vertices.size() > n_v){
         printf("size error = %i\n", conf.transitionSystem.m_vertices.size());

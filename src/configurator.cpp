@@ -1131,56 +1131,44 @@ void Configurator::addToPriorityQueue(Frontier f, std::vector<Frontier>& queue, 
 	queue.push_back(f);
 }
 
-// std::pair <bool, vertexDescriptor> Configurator::been_there(TransitionSystem & g, Disturbance target){
-// 	printf("ENTERED BEEN\n");
-// 	std::pair <bool, vertexDescriptor> result(0, TransitionSystem::null_vertex());
+std::pair <bool, vertexDescriptor> Configurator::been_there(TransitionSystem & g, Disturbance target){
+	printf("ENTERED BEEN\n");
+	std::pair <bool, vertexDescriptor> result(0, TransitionSystem::null_vertex());
 
-// 	std::pair <float, vertexDescriptor> best(10000, TransitionSystem::null_vertex());
-// 	float best_prob=0;
-// 	auto vs=boost::vertices(g);
-// 	for (auto vi=vs.first; vi!=vs.second; vi++ ){
-// 		// if (target.getAffIndex()==PURSUE){
-// 		// 	//smallest difference to target position
-// 		// 	// sd.D_position.x= g[*vi].endPose.p.x-target.pose().p.x;
-// 		// 	// sd.D_position.y =g[*vi].endPose.p.y-target.pose().p.y;
-// 		// 	// sd.D_angle = angle_subtract(g[*vi].endPose.q.GetAngle(), target.pose().q.GetAngle());
-// 		// }
-// 		if (target.getAffIndex()==NONE){
-// 			//b2Transform reference;
-// 			b2Vec2 reference = g[movingVertex].endPose.p-controlGoal.start.p;
-// 			//reference.q.Set(reference.q.GetAngle()- g[movingVertex].endPose.q.GetAngle());
-// 			float remaining= BOX2DRANGE-SignedVectorLength(reference);
-// 			target.bf.pose.p.x=remaining *cos(g[*vi].endPose.q.GetAngle());
-// 			target.bf.pose.p.y=remaining*sin(g[*vi].endPose.q.GetAngle());
-// 			target.bf.pose.q.Set((g[*vi].endPose.q.GetAngle()));
-// 			// sd.r_position.x=g[*vi].endPose.p.x-target_pose.p.x;
-// 			// sd.r_position.y =g[*vi].endPose.p.y-target_pose.p.y;
-// 			// sd.r_angle =g[*vi].endPose.q.GetAngle()-target_pose.q.GetAngle();
-// 		}
-// 		State s_target;
-// 		s_target.disturbance=target;
-// 		StateDifference sd(g[*vi], s_target);
-// 		float sum=sd.sum_d_pos();
-// 		auto in_edges = gt::inEdges(g, *vi);
-// 		auto most_likely_edge=gt::getMostLikely(g, in_edges, iteration);
-// 		printf("got likely edge of %i, %i, %i -> %i tot edges =%i\n",*vi, most_likely_edge.first, most_likely_edge.second.m_source, most_likely_edge.second.m_target, in_edges.size());
-// 		float prob= 0;
-// 		if (most_likely_edge.first ){
-// 			prob=g[most_likely_edge.second].probability;//.weighted_probability(iteration);
-// 			printf("set prob for %i:  %f\n", *vi, prob);
-// 		}
-// 		if (StateMatcher::StateMatch sm(sd, matcher.error); sm.disturbance_exact() & (sum<best.first || (sum==best.first & prob>best_prob))){
-// 				best.first=sum;
-// 				best.second=*vi;
-// 				best_prob=prob;
-// 				result.first=true;
-// 			}
-// 	}
-// 	result.second=best.second;
-// 	//printf("goal =%f, %f, %f", target.pose().p.x, target.pose().p.y, target.pose().q.GetAngle());
-// 	printf("been=%i, vertex=%i, pose: %f, %f, %f\n", result.first, result.second, g[result.second].endPose.p.x,g[result.second].endPose.p.y, g[result.second].endPose.q.GetAngle() );
-// 	return result; //if been there, do not explore, extract a plan then check it
-// }
+	std::pair <float, vertexDescriptor> best(10000, TransitionSystem::null_vertex());
+	float best_prob=0;
+	auto vs=boost::vertices(g);
+	for (auto vi=vs.first; vi!=vs.second; vi++ ){
+		if (target.getAffIndex()==NONE){
+			b2Vec2 reference = g[movingVertex].endPose.p-controlGoal.start.p;
+			float remaining= BOX2DRANGE-SignedVectorLength(reference);
+			target.bf.pose.p.x=remaining *cos(g[*vi].endPose.q.GetAngle());
+			target.bf.pose.p.y=remaining*sin(g[*vi].endPose.q.GetAngle());
+			target.bf.pose.q.Set((g[*vi].endPose.q.GetAngle()));
+		}
+		State s_target;
+		s_target.endPose=target.pose();
+		StateDifference sd(g[*vi], s_target);
+		float sum=sd.sum_r();
+		auto in_edges = gt::inEdges(g, *vi);
+		auto most_likely_edge=gt::getMostLikely(g, in_edges, iteration);
+		printf("got likely edge of %i, %i, %i -> %i tot edges =%i\n",*vi, most_likely_edge.first, most_likely_edge.second.m_source, most_likely_edge.second.m_target, in_edges.size());
+		float prob= 0;
+		if (most_likely_edge.first ){
+			prob=g[most_likely_edge.second].probability;//.weighted_probability(iteration);
+			printf("set prob for %i:  %f\n", *vi, prob);
+		}
+		if (StateMatcher::StateMatch sm(sd, matcher.error); sm.disturbance_exact() & (sum<best.first || (sum==best.first & prob>best_prob))){
+				best.first=sum;
+				best.second=*vi;
+				best_prob=prob;
+				result.first=true;
+			}
+	}
+	result.second=best.second;
+	printf("been=%i, vertex=%i, pose: %f, %f, %f\n", result.first, result.second, g[result.second].endPose.p.x,g[result.second].endPose.p.y, g[result.second].endPose.q.GetAngle() );
+	return result; //if been there, do not explore, extract a plan then check it
+}
 
 
 
@@ -1331,7 +1319,7 @@ std::vector <Frontier> Configurator::frontierVertices(vertexDescriptor v, Transi
 	return result;
 }
 
-void Configurator::recall_plan_from(const vertexDescriptor& v, TransitionSystem & g, b2World &world,  std::vector <vertexDescriptor>& plan_provisional, bool & plan_works){
+void Configurator::recall_plan_from(const vertexDescriptor& v, TransitionSystem & g, b2World &world,  std::vector <vertexDescriptor>& plan_provisional, bool & plan_works, const std::pair<bool, vertexDescriptor> & been){
    // printf("recalling\n");
 	auto srcs= gt::inEdges(g, v);
     vertexDescriptor src=v;
@@ -1344,7 +1332,7 @@ void Configurator::recall_plan_from(const vertexDescriptor& v, TransitionSystem 
 	Task controlGoal_adjusted= controlGoal;
 	applyAffineTrans(o_shift, controlGoal_adjusted);
 	bool ctrl_finished=false;
-	plan_provisional=planner(g, src, TransitionSystem::null_vertex(), false, &controlGoal_adjusted, &ctrl_finished); //been.second, been.first
+	plan_provisional=planner(g, src, been.second, been.first, &controlGoal_adjusted, &ctrl_finished); //been.second, been.first
 	printf("provisional plan from v%i\n", v);
 	printPlan(&plan_provisional);
 	auto vi= (plan_provisional.end()-1);
